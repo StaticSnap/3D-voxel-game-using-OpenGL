@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common\bufferGen.cpp" />
     <ClCompile Include="common\controls.cpp" />
     <ClCompile Include="common\cube.cpp" />
     <ClCompile Include="dependencies\include\glm\detail\glm.cpp" />
@@ -141,6 +142,7 @@
     <ClCompile Include="shaders\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\bufferGen.hpp" />
     <ClInclude Include="common\controls.hpp" />
     <ClInclude Include="common\cube.hpp" />
     <ClInclude Include="dependencies\include\GLFW\glfw3.h" />

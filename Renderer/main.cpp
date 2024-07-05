@@ -20,9 +20,13 @@ GLFWwindow* window;
 
 #include "common/controls.hpp"
 #include "common/cube.hpp";
+#include "common/bufferGen.hpp"
 
 int main(void)
 {
+
+
+
     std::srand(time(0));
     //initialize glfw
     if (!glfwInit()) {
@@ -65,9 +69,7 @@ int main(void)
 
     GLuint programID = LoadShaders("shaders/VertexShader.txt", "shaders/FragmentShader.txt");
 
-
-    Cube testCube(0.5,0.5,0.5,0,0,0);
-    Cube testCube2(0.6, 0.2, 1, 1, 0, 0);
+    BufferGen terrain; 
 
     //this tells openGL to not overdraw vertecies that should be behind others
     //enable depth test
@@ -107,7 +109,7 @@ int main(void)
 
         //first attribute buffer
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, testCube.getVertexBuffer());
+        glBindBuffer(GL_ARRAY_BUFFER, terrain.getVertexBufferID());
         glVertexAttribPointer(
             0,
             3,
@@ -119,7 +121,7 @@ int main(void)
 
         //2nd attribute buffer, color
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, testCube.getColorBuffer());
+        glBindBuffer(GL_ARRAY_BUFFER, terrain.getColorBufferID());
         glVertexAttribPointer(
             1,
             3,
@@ -131,10 +133,11 @@ int main(void)
 
 
         //draw the triangle
-        glDrawArrays(GL_TRIANGLES, 0, 12*3); //draw 12 triangles
+        glDrawArrays(GL_TRIANGLES, 0, 12*3*terrain.cubeCount); //draw 12 triangles * amount of cubes
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+
 
         //swap buffers
         glfwSwapBuffers(window);
@@ -144,7 +147,6 @@ int main(void)
     } //check if escape was pressed or if window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
 
-    testCube.deleteBuffer();
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
 

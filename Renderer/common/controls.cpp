@@ -26,7 +26,7 @@ float horizontalAngle = 3.14f;
 //vertical angle : 0, look at the horizon
 float verticalAngle = 0.0f;
 //initial FOV
-float initialFoV = 45.0f;
+float initialFoV = 60.0f;
 
 float speed = 2.0f;
 float mouseSpeed = 0.2f;
@@ -77,19 +77,19 @@ void computeMatricesFromInputs() {
 
 	//key detection -----------------
 	//forward
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		position += direction * deltaTime * speed;
 	}
 	//backward
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		position -= direction * deltaTime * speed;
 	}
 	//right
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		position += right * deltaTime * speed;
 	}
 	//left
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)  {
 		position -= right * deltaTime * speed;
 	}
 
