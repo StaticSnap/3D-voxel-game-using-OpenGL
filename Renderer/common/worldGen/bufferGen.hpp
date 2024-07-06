@@ -9,16 +9,19 @@
 class BufferGen {
 
 public:
-	BufferGen();
+	BufferGen(short*** levelDat);
 
 	GLuint getVertexBufferID();
 	GLuint getColorBufferID();
 
-	short cubeCount;
+	int getCubeCount();
 
 private:
 	GLuint masterVertexBufferID;
 	GLuint masterColorBufferID;
+
+	int cubeCount = 0;
+	int bufferOffset = 0;
 };
 
 

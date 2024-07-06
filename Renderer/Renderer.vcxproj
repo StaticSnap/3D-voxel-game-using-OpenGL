@@ -133,18 +133,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="common\bufferGen.cpp" />
+    <ClCompile Include="common\worldGen\bufferGen.cpp" />
     <ClCompile Include="common\controls.cpp" />
-    <ClCompile Include="common\cube.cpp" />
+    <ClCompile Include="common\worldGen\cube.cpp" />
+    <ClCompile Include="common\worldGen\worldSeeding.cpp" />
     <ClCompile Include="dependencies\include\glm\detail\glm.cpp" />
     <ClCompile Include="dependencies\include\glm\glm.cppm" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shaders\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\bufferGen.hpp" />
+    <ClInclude Include="common\worldGen\bufferGen.hpp" />
     <ClInclude Include="common\controls.hpp" />
-    <ClInclude Include="common\cube.hpp" />
+    <ClInclude Include="common\worldGen\cube.hpp" />
+    <ClInclude Include="common\worldGen\worldSeeding.hpp" />
     <ClInclude Include="dependencies\include\GLFW\glfw3.h" />
     <ClInclude Include="dependencies\include\GLFW\glfw3native.h" />
     <ClInclude Include="dependencies\include\glm\common.hpp" />

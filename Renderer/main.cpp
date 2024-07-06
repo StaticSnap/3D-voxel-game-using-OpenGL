@@ -1,6 +1,8 @@
-//renderer project, started 06/01/2024, lasted changed 7/2/2024
+//renderer project, started 06/01/2024, lasted changed 7/5/2024
 //started to help build understanding on renderering and hopefully create a game
-//a majority of early code is taken following the openGL tutorial found at www.opengl-tutorial.org
+//early code is taken following the openGL tutorial found at www.opengl-tutorial.org
+
+//to do:rewrite genBuffer to remove extranious triangles from cubes touching
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,15 +21,14 @@ GLFWwindow* window;
 #include <shader.hpp>
 
 #include "common/controls.hpp"
-#include "common/cube.hpp";
-#include "common/bufferGen.hpp"
+#include "common/worldGen/worldSeeding.hpp"
 
 int main(void)
 {
 
-
-
     std::srand(time(0));
+
+
     //initialize glfw
     if (!glfwInit()) {
         fprintf(stderr, "failed to initialize GLFW\n");
@@ -59,7 +60,7 @@ int main(void)
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    glClearColor(rand()% 10 / 10.0f, rand() % 10 / 10.0f, rand() % 10 / 10.0f, 0.0f);
+    glClearColor(0, 0.7, 0.9, 1);
 
 
     //creating the VAO
@@ -69,7 +70,7 @@ int main(void)
 
     GLuint programID = LoadShaders("shaders/VertexShader.txt", "shaders/FragmentShader.txt");
 
-    BufferGen terrain; 
+    WorldSeeding terrain(3); 
 
     //this tells openGL to not overdraw vertecies that should be behind others
     //enable depth test
@@ -109,7 +110,7 @@ int main(void)
 
         //first attribute buffer
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain.getVertexBufferID());
+        glBindBuffer(GL_ARRAY_BUFFER, terrain.getMasterVertexBufferID());
         glVertexAttribPointer(
             0,
             3,
@@ -121,7 +122,7 @@ int main(void)
 
         //2nd attribute buffer, color
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain.getColorBufferID());
+        glBindBuffer(GL_ARRAY_BUFFER, terrain.getmasterColorBufferID());
         glVertexAttribPointer(
             1,
             3,
@@ -133,7 +134,7 @@ int main(void)
 
 
         //draw the triangle
-        glDrawArrays(GL_TRIANGLES, 0, 12*3*terrain.cubeCount); //draw 12 triangles * amount of cubes
+        glDrawArrays(GL_TRIANGLES, 0, 12*3*terrain.getCubeCount()); //draw 12 triangles * amount of cubes
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -150,6 +151,7 @@ int main(void)
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
 
+    terrain.~WorldSeeding();
 
     glfwTerminate();
 

@@ -48,6 +48,10 @@ Cube::Cube(float R, float G, float B, int posx, int posy, int posz) {
     
 }
 
+Cube::~Cube() {
+    deleteCube();
+}
+
 
 GLuint Cube::getVertexBuffer() {
     return vertexBufferID;
@@ -59,6 +63,12 @@ GLuint Cube::getColorBuffer() {
 
 void Cube::deleteBuffer() {
     glDeleteBuffers(1, &vertexBufferID);
+}
+
+void Cube::deleteCube() {
+    deleteBuffer();
+    delete[] colorBufferData;
+    delete[] vertexBufferData;
 }
 
 GLfloat* Cube::getVertexBufferData() {

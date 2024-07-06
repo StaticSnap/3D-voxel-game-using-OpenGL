@@ -28,7 +28,7 @@ float verticalAngle = 0.0f;
 //initial FOV
 float initialFoV = 60.0f;
 
-float speed = 2.0f;
+float speed = 10.0f;
 float mouseSpeed = 0.2f;
 
 
@@ -94,7 +94,7 @@ void computeMatricesFromInputs() {
 	}
 
 	//projection matrix : 45 deg FOV, 4:3 ratio, 0.1-100 unit display range
-	ProjectionMatrix = glm::perspective(glm::radians(initialFoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	ProjectionMatrix = glm::perspective(glm::radians(initialFoV), 4.0f / 3.0f, 0.1f, 300.0f);
 
 	//camera matrix
 	ViewMatrix = glm::lookAt(

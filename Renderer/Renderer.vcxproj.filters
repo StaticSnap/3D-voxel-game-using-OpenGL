@@ -30,10 +30,13 @@
     <ClCompile Include="common\controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\cube.cpp">
+    <ClCompile Include="common\worldGen\cube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\bufferGen.cpp">
+    <ClCompile Include="common\worldGen\bufferGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\worldGen\worldSeeding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -926,10 +929,13 @@
     <ClInclude Include="common\controls.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\cube.hpp">
+    <ClInclude Include="common\worldGen\cube.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\bufferGen.hpp">
+    <ClInclude Include="common\worldGen\bufferGen.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\worldGen\worldSeeding.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
