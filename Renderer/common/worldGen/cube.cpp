@@ -10,7 +10,9 @@ extern GLFWwindow* window;
 
 
 Cube::Cube(float R, float G, float B, int posx, int posy, int posz) {
-	pos[0] = posx;
+	//variables storing position and color of cube
+    //currently unused
+    pos[0] = posx;
 	pos[1] = posy;
 	pos[2] = posz;
 
@@ -18,7 +20,7 @@ Cube::Cube(float R, float G, float B, int posx, int posy, int posz) {
 	color[1] = G;
 	color[2] = B;
 
-
+    //iterate over whole cube and fill each vertex data and color data for all 12 triangles
     for (int i = 0; i < 108; i++) {
         vertexBufferData[i] = 0;
 
@@ -36,37 +38,13 @@ Cube::Cube(float R, float G, float B, int posx, int posy, int posz) {
             colorBufferData[i] = B;
         }
     }
-
-    glGenBuffers(1, &vertexBufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &colorBufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colorBufferData), colorBufferData, GL_STATIC_DRAW);
-
-    
 }
 
 Cube::~Cube() {
     deleteCube();
 }
 
-
-GLuint Cube::getVertexBuffer() {
-    return vertexBufferID;
-}
-
-GLuint Cube::getColorBuffer() {
-    return colorBufferID;
-}
-
-void Cube::deleteBuffer() {
-    glDeleteBuffers(1, &vertexBufferID);
-}
-
 void Cube::deleteCube() {
-    deleteBuffer();
     delete[] colorBufferData;
     delete[] vertexBufferData;
 }

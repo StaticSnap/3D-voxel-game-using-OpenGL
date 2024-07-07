@@ -10,14 +10,8 @@ public:
 	Cube(float R = 0, float G = 0, float B = 0, int posx = 0, int posy = 0, int posz = 0);
     ~Cube();
 
-    GLuint getVertexBuffer();
-    GLuint getColorBuffer();
-
     GLfloat* getVertexBufferData();
     GLfloat* getColorBufferData();
-
-
-    void deleteBuffer();
 
     void deleteCube();
 
@@ -67,9 +61,6 @@ private:
     -0.5f,  0.5f,  0.5f,
      0.5f, -0.5f,  0.5f
     };
-
-    GLuint vertexBufferID;
-    GLuint colorBufferID;
 };
 
 #endif

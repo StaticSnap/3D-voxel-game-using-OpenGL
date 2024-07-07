@@ -26,7 +26,7 @@ GLFWwindow* window;
 int main(void)
 {
 
-    std::srand(time(0));
+    std::srand(3);
 
 
     //initialize glfw
@@ -70,6 +70,7 @@ int main(void)
 
     GLuint programID = LoadShaders("shaders/VertexShader.txt", "shaders/FragmentShader.txt");
 
+    //this class is he entire game. taking a seed as a paremter. this will change eventually
     WorldSeeding terrain(3); 
 
     //this tells openGL to not overdraw vertecies that should be behind others
@@ -134,7 +135,7 @@ int main(void)
 
 
         //draw the triangle
-        glDrawArrays(GL_TRIANGLES, 0, 12*3*terrain.getCubeCount()); //draw 12 triangles * amount of cubes
+        glDrawArrays(GL_TRIANGLES, 0, terrain.getCubeCount()/3); //draw 12 triangles per cube
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

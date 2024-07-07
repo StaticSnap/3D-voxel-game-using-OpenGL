@@ -28,7 +28,7 @@ float verticalAngle = 0.0f;
 //initial FOV
 float initialFoV = 60.0f;
 
-float speed = 10.0f;
+float speed = 20.0f;
 float mouseSpeed = 0.2f;
 
 
@@ -91,6 +91,10 @@ void computeMatricesFromInputs() {
 	//left
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)  {
 		position -= right * deltaTime * speed;
+	}
+	//up
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		position += up * deltaTime * speed;
 	}
 
 	//projection matrix : 45 deg FOV, 4:3 ratio, 0.1-100 unit display range
