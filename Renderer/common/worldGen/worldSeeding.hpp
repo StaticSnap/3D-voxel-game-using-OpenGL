@@ -14,7 +14,7 @@ public:
 	GLuint getMasterVertexBufferID();
 	GLuint getmasterColorBufferID();
 
-	int getCubeCount();
+	int getVertexCount();
 
 private:
 	short*** levelDat = new short** [256];
@@ -22,7 +22,7 @@ private:
 	GLuint masterVertexBufferID;
 	GLuint masterColorBufferID;
 
-	int cubeCount = 0;
+	int vertexCount = 0;
 };
 
 

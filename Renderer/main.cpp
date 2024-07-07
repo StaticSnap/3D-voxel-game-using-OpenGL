@@ -80,7 +80,7 @@ int main(void)
     glDepthFunc(GL_LESS);
 
     //cull triangles whose normal is not facing the camera
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
 
     do {
@@ -135,7 +135,7 @@ int main(void)
 
 
         //draw the triangle
-        glDrawArrays(GL_TRIANGLES, 0, terrain.getCubeCount()/3); //draw 12 triangles per cube
+        glDrawArrays(GL_TRIANGLES, 0, terrain.getVertexCount()/3); //draw 12 triangles per cube
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

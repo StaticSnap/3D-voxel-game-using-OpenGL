@@ -14,13 +14,13 @@ public:
 	GLuint getVertexBufferID();
 	GLuint getColorBufferID();
 
-	int getCubeCount();
+	int getVertexCount();
 
 private:
 	GLuint masterVertexBufferID;
 	GLuint masterColorBufferID;
 
-	int cubeCount = 0;
+	int vertexCount = 0;
 	int bufferOffset = 0;
 };
 

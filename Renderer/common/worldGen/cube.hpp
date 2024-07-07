@@ -7,11 +7,11 @@
 
 class Cube {
 public:
-	Cube(float R = 0, float G = 0, float B = 0, int posx = 0, int posy = 0, int posz = 0);
+	Cube(float R = 0, float G = 0, float B = 0, int posx = 0, int posy = 0, int posz = 0, bool faceVisibility[6] = 0);
     ~Cube();
 
-    GLfloat* getVertexBufferData();
-    GLfloat* getColorBufferData();
+    std::vector<GLfloat> getVertexBufferData();
+    std::vector<GLfloat> getColorBufferData();
 
     void deleteCube();
 
@@ -19,47 +19,58 @@ private:
 	glm::vec3 color;
 	glm::vec3 pos;
 
-    GLfloat* colorBufferData = new GLfloat[108];
-    GLfloat* vertexBufferData = new GLfloat[108];
+    std::vector<GLfloat> colorBufferData;
+    std::vector<GLfloat> vertexBufferData;
 
 
-    const GLfloat cubeVertexDefault[108] = {
-    -0.5f, -0.5f, -0.5f,   // triangle 1 : begin
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,   // triangle 1 : end
-     0.5f,  0.5f, -0.5f,   // triangle 2 : begin
-    -0.5f, -0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,   // triangle 2 : end
-     0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-     0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
-     0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f
+    const GLfloat cubeVertexDefault[6][18] = {
+        //top
+        {-0.5f,0.5f,-0.5f,
+        -0.5f,0.5f,0.5f,
+        0.5f,0.5f,-0.5f,
+        0.5f,0.5f,0.5f,
+        -0.5f,0.5f,0.5f,
+        0.5f,0.5f,-0.5f},
+
+        //left
+        {-0.5f, -0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, 0.5f, 0.5f},
+
+        //front
+        {-0.5f,0.5f,-0.5f,
+        -0.5f,-0.5f,-0.5f,
+        0.5f,0.5f,-0.5f,
+        0.5f,-0.5f,-0.5f,
+        -0.5f,-0.5f,-0.5f,
+        0.5f,0.5f,-0.5f},
+
+        //right
+        {0.5f,0.5f,-0.5f,
+        0.5f,-0.5f,-0.5f,
+        0.5f,0.5f,0.5f,     
+        0.5f,-0.5f,0.5f,
+        0.5f,-0.5f,-0.5f,
+        0.5f,0.5f,0.5f},
+
+        //back
+        {0.5f,-0.5f,0.5f,
+        -0.5f,-0.5f,0.5f,
+        0.5f,0.5f,0.5f,
+        -0.5f,0.5f,0.5f,
+        -0.5f,-0.5f,0.5f,
+        0.5f,0.5f,0.5f},
+
+        //bottom
+        {-0.5f,-0.5f,-0.5f,
+        -0.5f,-0.5f,0.5f,
+        0.5f,-0.5f,-0.5f,
+        0.5f,-0.5f,0.5f,
+        -0.5f,-0.5f,0.5f,
+        0.5f,-0.5f,-0.5f}
     };
 };
 

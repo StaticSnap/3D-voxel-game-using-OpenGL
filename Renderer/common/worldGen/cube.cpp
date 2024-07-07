@@ -1,3 +1,5 @@
+#include <vector>
+
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
@@ -9,8 +11,29 @@ extern GLFWwindow* window;
 #include "cube.hpp"
 
 
-Cube::Cube(float R, float G, float B, int posx, int posy, int posz) {
-	//variables storing position and color of cube
+Cube::Cube(float R, float G, float B, int posx, int posy, int posz, bool FaceVisibility[6]) {
+    //faceVisibility: 0 top, 1 left, 2 front, 3 right, 4 back, 5 bottom
+    for (int i = 0; i < 6; i++) {
+        if (FaceVisibility[i] == true) {
+            for (int j = 0; j < 18; j++) {
+                if (j % 3 == 0) {
+                    vertexBufferData.push_back(cubeVertexDefault[i][j] + posx);
+                    colorBufferData.push_back(R);
+                }
+                else if (j % 3 == 1) {
+                    vertexBufferData.push_back(cubeVertexDefault[i][j] + posy);
+                    colorBufferData.push_back(G);
+                }
+                else {
+                    vertexBufferData.push_back(cubeVertexDefault[i][j] + posz);
+                    colorBufferData.push_back(B);
+                }
+            }
+        }
+    }
+
+
+    //variables storing position and color of cube
     //currently unused
     pos[0] = posx;
 	pos[1] = posy;
@@ -19,25 +42,6 @@ Cube::Cube(float R, float G, float B, int posx, int posy, int posz) {
 	color[0] = R;
 	color[1] = G;
 	color[2] = B;
-
-    //iterate over whole cube and fill each vertex data and color data for all 12 triangles
-    for (int i = 0; i < 108; i++) {
-        vertexBufferData[i] = 0;
-
-        vertexBufferData[i] += cubeVertexDefault[i];
-        if (i % 3 == 0) {
-            vertexBufferData[i] += posx;
-            colorBufferData[i] = R;
-        }
-        else if (i % 3 == 1) {
-            vertexBufferData[i] += posy;
-            colorBufferData[i] = G;
-        }
-        else {
-            vertexBufferData[i] += posz;
-            colorBufferData[i] = B;
-        }
-    }
 }
 
 Cube::~Cube() {
@@ -45,15 +49,15 @@ Cube::~Cube() {
 }
 
 void Cube::deleteCube() {
-    delete[] colorBufferData;
-    delete[] vertexBufferData;
+    colorBufferData.clear();
+    vertexBufferData.clear();
 }
 
-GLfloat* Cube::getVertexBufferData() {
+std::vector<GLfloat> Cube::getVertexBufferData() {
     return vertexBufferData;
 }
 
-GLfloat* Cube::getColorBufferData() {
+std::vector<GLfloat> Cube::getColorBufferData() {
     return colorBufferData;
 }
 

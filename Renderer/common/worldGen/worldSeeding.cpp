@@ -90,7 +90,7 @@ WorldSeeding::WorldSeeding(int seed) {
 	masterVertexBufferID = terrain.getVertexBufferID();
 	masterColorBufferID = terrain.getColorBufferID();
 
-	cubeCount = terrain.getCubeCount();
+	vertexCount = terrain.getVertexCount();
 
 	for (int i = 0; i < 8; i++) {
 		delete[] noiseGrid[i];
@@ -116,6 +116,6 @@ GLuint WorldSeeding::getmasterColorBufferID() {
 	return masterColorBufferID;
 }
 
-int WorldSeeding::getCubeCount() {
-	return cubeCount;
+int WorldSeeding::getVertexCount() {
+	return vertexCount;
 }
