@@ -31,17 +31,6 @@ Cube::Cube(float R, float G, float B, int posx, int posy, int posz, bool FaceVis
             }
         }
     }
-
-
-    //variables storing position and color of cube
-    //currently unused
-    pos[0] = posx;
-	pos[1] = posy;
-	pos[2] = posz;
-
-	color[0] = R;
-	color[1] = G;
-	color[2] = B;
 }
 
 Cube::~Cube() {

@@ -1,5 +1,5 @@
 //worldSeeding.hpp
-//created 7/5/2024 last edited 7/5/2024
+//created 7/5/2024 last edited 7/6/2024
 //this class uses perlin noise to generate a 3d array determining what blocks go to what coordinates
 //this is then passed to bufferGen to create the buffer that will then be exchanged for main to compute
 
@@ -8,16 +8,21 @@
 
 class WorldSeeding {
 public:
-	WorldSeeding(int seed = 0);
+	WorldSeeding(int newWorldWidth, int newWorldHeight);
 	~WorldSeeding();
 
 	GLuint getMasterVertexBufferID();
 	GLuint getmasterColorBufferID();
 
+	int getWorldWidth();
+	int getWorldHeight();
+
 	int getVertexCount();
 
 private:
-	short*** levelDat = new short** [256];
+	int worldWidth;
+	int worldHeight;
+	short*** levelDat;
 
 	GLuint masterVertexBufferID;
 	GLuint masterColorBufferID;

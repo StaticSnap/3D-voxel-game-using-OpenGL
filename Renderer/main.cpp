@@ -1,8 +1,8 @@
-//renderer project, started 06/01/2024, lasted changed 7/5/2024
+//renderer project, started 06/01/2024, lasted changed 7/6/2024
 //started to help build understanding on renderering and hopefully create a game
 //early code is taken following the openGL tutorial found at www.opengl-tutorial.org
 
-//to do:rewrite genBuffer to remove extranious triangles from cubes touching
+//to do: implement perlin noise and start making a real game
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +71,7 @@ int main(void)
     GLuint programID = LoadShaders("shaders/VertexShader.txt", "shaders/FragmentShader.txt");
 
     //this class is he entire game. taking a seed as a paremter. this will change eventually
-    WorldSeeding terrain(3); 
+    WorldSeeding terrain(256,30); 
 
     //this tells openGL to not overdraw vertecies that should be behind others
     //enable depth test

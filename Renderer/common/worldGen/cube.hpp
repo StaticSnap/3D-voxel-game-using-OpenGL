@@ -1,5 +1,5 @@
 //cube.hpp
-//created 7/2/2024 last edited 7/5/2024
+//created 7/2/2024 last edited 7/6/2024
 //the class for a cube. It generates it's own buffer data
 
 #ifndef CUBE_HPP
@@ -16,12 +16,9 @@ public:
     void deleteCube();
 
 private:
-	glm::vec3 color;
-	glm::vec3 pos;
 
     std::vector<GLfloat> colorBufferData;
     std::vector<GLfloat> vertexBufferData;
-
 
     const GLfloat cubeVertexDefault[6][18] = {
         //top
