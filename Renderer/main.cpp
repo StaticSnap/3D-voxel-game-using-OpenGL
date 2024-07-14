@@ -1,8 +1,9 @@
-//renderer project, started 06/01/2024, lasted changed 7/6/2024
+//renderer project, started 06/01/2024, lasted changed 7/14/2024
 //started to help build understanding on renderering and hopefully create a game
 //early code is taken following the openGL tutorial found at www.opengl-tutorial.org
 
-//to do: implement perlin noise and start making a real game
+//to do: increase render distance and relegate rendering to a seperate thread
+// also implement storing world data outside of program to reduce heap space taken by an increasing world
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +22,7 @@ GLFWwindow* window;
 #include <shader.hpp>
 
 #include "common/controls.hpp"
-#include "common/worldGen/worldSeeding.hpp"
+#include "common/worldGen/bufferGen.hpp"
 
 int main(void)
 {
@@ -70,8 +71,9 @@ int main(void)
 
     GLuint programID = LoadShaders("shaders/VertexShader.txt", "shaders/FragmentShader.txt");
 
-    //this class is he entire game. taking a seed as a paremter. this will change eventually
-    WorldSeeding terrain(256,30); 
+    //this class is the entire game. taking a seed as a paremter. this will change eventually
+    BufferGen terrain(320,100);
+    terrain.updateBuffers();
 
     //this tells openGL to not overdraw vertecies that should be behind others
     //enable depth test
@@ -79,14 +81,12 @@ int main(void)
     //accept fragment if it is closer to the camera than the former one
     glDepthFunc(GL_LESS);
 
-    //cull triangles whose normal is not facing the camera
-    //glEnable(GL_CULL_FACE);
-
 
     do {
         //clear screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        terrain.updateBuffers();
         
         //get a handle for our "MVP" uniform
         GLuint MatrixID = glGetUniformLocation(programID, "MVP");
@@ -109,36 +109,39 @@ int main(void)
         //send transformation to the currently bound shader
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-        //first attribute buffer
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain.getMasterVertexBufferID());
-        glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            0,
-            (void*)0
-        );
+        for (int i = 0; i < terrain.getChunkBufferVert().size(); i++) {
+            //first attribute buffer
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, terrain.getChunkBufferVert()[i]);
+            glVertexAttribPointer(
+                0,
+                3,
+                GL_FLOAT,
+                GL_FALSE,
+                0,
+                (void*)0
+            );
 
-        //2nd attribute buffer, color
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, terrain.getmasterColorBufferID());
-        glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            0,
-            (void*)0
-        );
+            //2nd attribute buffer, color
+            glEnableVertexAttribArray(1);
+            glBindBuffer(GL_ARRAY_BUFFER, terrain.getChunkBufferCol()[i]);
+            glVertexAttribPointer(
+                1,
+                3,
+                GL_FLOAT,
+                GL_FALSE,
+                0,
+                (void*)0
+            );
 
 
-        //draw the triangle
-        glDrawArrays(GL_TRIANGLES, 0, terrain.getVertexCount()/3); //draw 12 triangles per cube
+            //draw the triangle
+            glDrawArrays(GL_TRIANGLES, 0, terrain.getVertexCount()[i] / 3); //draw 12 triangles per cube
 
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+        }
 
 
         //swap buffers
@@ -151,8 +154,6 @@ int main(void)
 
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
-
-    terrain.~WorldSeeding();
 
     glfwTerminate();
 

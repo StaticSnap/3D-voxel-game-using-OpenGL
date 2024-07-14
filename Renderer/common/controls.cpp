@@ -6,6 +6,8 @@ extern GLFWwindow* window;
 
 #include "controls.hpp"
 
+#include <iostream>
+
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
@@ -19,7 +21,7 @@ glm::mat4 getProjectionMatrix() {
 
 
 //position
-glm::vec3 position = glm::vec3(0, 0, 5);
+glm::vec3 position = glm::vec3(100, 50, 100);
 
 //horizontal angle : toward -Z
 float horizontalAngle = 3.14f;
@@ -28,7 +30,7 @@ float verticalAngle = 0.0f;
 //initial FOV
 float initialFoV = 60.0f;
 
-float speed = 20.0f;
+float speed = 50.0f;
 float mouseSpeed = 0.2f;
 
 
@@ -71,7 +73,6 @@ void computeMatricesFromInputs() {
 	);
 
 	//to find the up vector from the direction (front) and right vector we just need to take the cross product
-
 	glm::vec3 up = glm::cross(right, direction);
 
 
@@ -98,7 +99,7 @@ void computeMatricesFromInputs() {
 	}
 
 	//projection matrix : 45 deg FOV, 4:3 ratio, 0.1-100 unit display range
-	ProjectionMatrix = glm::perspective(glm::radians(initialFoV), 4.0f / 3.0f, 0.1f, 300.0f);
+	ProjectionMatrix = glm::perspective(glm::radians(initialFoV), 4.0f / 3.0f, 0.1f, 600.0f);
 
 	//camera matrix
 	ViewMatrix = glm::lookAt(
@@ -108,4 +109,6 @@ void computeMatricesFromInputs() {
 	);
 
 	lastTime = currentTime;
+
+	//std::cout << "x:" << position[0] << " y:" << position[1] << " z:" << position[2] << std::endl;
 }

@@ -1,6 +1,6 @@
 //cube.hpp
-//created 7/2/2024 last edited 7/6/2024
-//the class for a cube. It generates it's own buffer data
+//created 7/2/2024 last edited 7/12/2024
+//the class for a cube. It holds all related values such as color and position. It does NOT generate it's own buffer.
 
 #ifndef CUBE_HPP
 #define CUBE_HPP
@@ -10,65 +10,18 @@ public:
 	Cube(float R = 0, float G = 0, float B = 0, int posx = 0, int posy = 0, int posz = 0, bool faceVisibility[6] = 0);
     ~Cube();
 
-    std::vector<GLfloat> getVertexBufferData();
-    std::vector<GLfloat> getColorBufferData();
-
-    void deleteCube();
+    float* getColorDat();
+    float* getPosDat();
+    bool* getFaceVisibility();
 
 private:
 
-    std::vector<GLfloat> colorBufferData;
-    std::vector<GLfloat> vertexBufferData;
+    //decide wether you can afford to use the stack for this class!
+    //answer, probibly not
+    float* colorDat = new float[3];
+    float* posDat = new float[3];
+    bool* faceVisibility = new bool[6];
 
-    const GLfloat cubeVertexDefault[6][18] = {
-        //top
-        {-0.5f,0.5f,-0.5f,
-        -0.5f,0.5f,0.5f,
-        0.5f,0.5f,-0.5f,
-        0.5f,0.5f,0.5f,
-        -0.5f,0.5f,0.5f,
-        0.5f,0.5f,-0.5f},
-
-        //left
-        {-0.5f, -0.5f, -0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, 0.5f, 0.5f},
-
-        //front
-        {-0.5f,0.5f,-0.5f,
-        -0.5f,-0.5f,-0.5f,
-        0.5f,0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        -0.5f,-0.5f,-0.5f,
-        0.5f,0.5f,-0.5f},
-
-        //right
-        {0.5f,0.5f,-0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f,0.5f,0.5f,     
-        0.5f,-0.5f,0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f,0.5f,0.5f},
-
-        //back
-        {0.5f,-0.5f,0.5f,
-        -0.5f,-0.5f,0.5f,
-        0.5f,0.5f,0.5f,
-        -0.5f,0.5f,0.5f,
-        -0.5f,-0.5f,0.5f,
-        0.5f,0.5f,0.5f},
-
-        //bottom
-        {-0.5f,-0.5f,-0.5f,
-        -0.5f,-0.5f,0.5f,
-        0.5f,-0.5f,-0.5f,
-        0.5f,-0.5f,0.5f,
-        -0.5f,-0.5f,0.5f,
-        0.5f,-0.5f,-0.5f}
-    };
 };
 
 #endif

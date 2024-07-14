@@ -13,41 +13,34 @@ extern GLFWwindow* window;
 
 Cube::Cube(float R, float G, float B, int posx, int posy, int posz, bool FaceVisibility[6]) {
     //faceVisibility: 0 top, 1 left, 2 front, 3 right, 4 back, 5 bottom
+    colorDat[0] = R;
+    colorDat[1] = G;
+    colorDat[2] = B;
+
+    posDat[0] = posx;
+    posDat[1] = posy;
+    posDat[2] = posz;
+
     for (int i = 0; i < 6; i++) {
-        if (FaceVisibility[i] == true) {
-            for (int j = 0; j < 18; j++) {
-                if (j % 3 == 0) {
-                    vertexBufferData.push_back(cubeVertexDefault[i][j] + posx);
-                    colorBufferData.push_back(R);
-                }
-                else if (j % 3 == 1) {
-                    vertexBufferData.push_back(cubeVertexDefault[i][j] + posy);
-                    colorBufferData.push_back(G);
-                }
-                else {
-                    vertexBufferData.push_back(cubeVertexDefault[i][j] + posz);
-                    colorBufferData.push_back(B);
-                }
-            }
-        }
+        faceVisibility[i] = FaceVisibility[i];
     }
 }
 
 Cube::~Cube() {
-    deleteCube();
+    delete colorDat;
+    delete posDat;
+    delete faceVisibility;
 }
 
-void Cube::deleteCube() {
-    colorBufferData.clear();
-    vertexBufferData.clear();
+float* Cube::getColorDat() {
+    return colorDat;
 }
 
-std::vector<GLfloat> Cube::getVertexBufferData() {
-    return vertexBufferData;
+float* Cube::getPosDat() {
+    return posDat;
 }
 
-std::vector<GLfloat> Cube::getColorBufferData() {
-    return colorBufferData;
+bool* Cube::getFaceVisibility() {
+    return faceVisibility;
 }
-
 
