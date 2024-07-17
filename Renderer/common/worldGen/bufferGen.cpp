@@ -221,9 +221,10 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 							cubeDat[5] = float(k) + chunksInView[l][2] * 32;
 							//depending on the type of block, the color will be different
 							if (chunkDat[l][i][j][k] == 1) {
-								cubeDat[0] = float((rand() % 40) / 40.0);
-								cubeDat[1] = float((rand() % 40) / 40.0);
-								cubeDat[2] = float((rand() % 40) / 40.0);
+								cubeDat[0] = float(rand() % 40 / 40.0);
+								cubeDat[1] = float(rand() % 40 / 40.0);
+								cubeDat[2] = float(rand() % 40 / 40.0);
+								
 							}
 							else {
 								//other block types
@@ -285,6 +286,9 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 	}
 	
 	chunksInView.clear();
+
+	std::cout << "done" << std::endl;
+	std::cout << chunkBuffersVert.size() << std::endl << std::endl;
 
 	return chunkBuffersVert;
 }

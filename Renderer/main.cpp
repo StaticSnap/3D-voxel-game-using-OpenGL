@@ -9,6 +9,11 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cstdlib>
+#include <thread>
+#include <atomic>
+#include <mutex>
+std::atomic<bool> gameRunning(true);
+std::mutex threadLock;
 
 //include glew BEFORE gl.h and glfw3.h
 #include <GL/glew.h>
@@ -24,11 +29,21 @@ GLFWwindow* window;
 #include "common/controls.hpp"
 #include "common/worldGen/bufferGen.hpp"
 
+void ThreadFunc(BufferGen& terrain) {
+    std::unique_lock<std::mutex> lock(threadLock);
+    terrain.updateBuffers();
+    lock.unlock();
+    
+    //while (gameRunning) {
+    //    //std::unique_lock<std::mutex> lock(threadLock);
+    //    terrain.updateBuffers();
+    //    //lock.unlock();
+    //}
+}
+
 int main(void)
 {
-
     std::srand(3);
-
 
     //initialize glfw
     if (!glfwInit()) {
@@ -71,22 +86,28 @@ int main(void)
 
     GLuint programID = LoadShaders("shaders/VertexShader.txt", "shaders/FragmentShader.txt");
 
-    //this class is the entire game. taking a seed as a paremter. this will change eventually
-    BufferGen terrain(320,100);
-    terrain.updateBuffers();
-
     //this tells openGL to not overdraw vertecies that should be behind others
     //enable depth test
     glEnable(GL_DEPTH_TEST);
     //accept fragment if it is closer to the camera than the former one
     glDepthFunc(GL_LESS);
 
+    //this class is the entire game. taking a world size as a paremter. this will change eventually
+    BufferGen terrain(320, 100);
+    //terrain.updateBuffers();
+
+    std::thread t(ThreadFunc, std::ref(terrain));
+
+    gameRunning = false;
+
+    t.join();
 
     do {
+
         //clear screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        terrain.updateBuffers();
+        //terrain.updateBuffers();
         
         //get a handle for our "MVP" uniform
         GLuint MatrixID = glGetUniformLocation(programID, "MVP");
@@ -101,7 +122,7 @@ int main(void)
         glm::mat4 Model = glm::mat4(1.0f);
         //finally combine all, matrix mult is performed right to left
         glm::mat4 MVP = Projection * View * Model;
-
+        
 
         //use the shader
         glUseProgram(programID);
@@ -109,6 +130,9 @@ int main(void)
         //send transformation to the currently bound shader
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
+
+        std::unique_lock<std::mutex> lock(threadLock);
+        
         for (int i = 0; i < terrain.getChunkBufferVert().size(); i++) {
             //first attribute buffer
             glEnableVertexAttribArray(0);
@@ -138,11 +162,10 @@ int main(void)
             //draw the triangle
             glDrawArrays(GL_TRIANGLES, 0, terrain.getVertexCount()[i] / 3); //draw 12 triangles per cube
 
-
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
         }
-
+        lock.unlock();
 
         //swap buffers
         glfwSwapBuffers(window);
@@ -160,3 +183,4 @@ int main(void)
     return 0;
 
 }
+
