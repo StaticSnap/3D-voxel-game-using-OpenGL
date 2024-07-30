@@ -8,16 +8,21 @@ BufferGen::BufferGen(int newWorldWidth, int newWorldHeight) {
 	
 	seed = new WorldSeeding(worldWidth, worldHeight);
 
-	vertCountTotal = new int[1];
 
+	different = false;
+	changing = false;
+
+	masterVertexBufferID = -1;
+	masterColorBufferID = -1;
+
+	prevChunk = glm::vec3(0, 0, 0);
 }
 
-int* BufferGen::getVertexCount() {
+std::vector<int> BufferGen::getVertexCount() {
 	return vertCountTotal;
 }
 
-std::vector<GLuint> BufferGen::updateBuffers() {
-	//cube vertex offsets
+void BufferGen::threadDataUpdate() {
 	const GLfloat cubeVertexDefault[6][18] = {
 		//top
 		{-0.5f,0.5f,-0.5f,
@@ -68,13 +73,15 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 		0.5f,-0.5f,-0.5f}
 	};
 
-	//list of al chunks withen the player range
-	std::vector<glm::vec3> chunksInView;
 	//represents the chunk the player is currently in
 	glm::vec3 chunk;
 	chunk[0] = int(position[0] / 32);
 	chunk[1] = int(position[1] / 32);
 	chunk[2] = int(position[2] / 32);
+
+	if (chunk == prevChunk) {
+		return;
+	}
 
 	//if the chunk is in the negatives than subtract one from the chunk
 	//because otherwise -0 would become 0 and the two chunks would merge
@@ -89,45 +96,25 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 		chunk[2]--;
 	}
 
-	//gather surrounding chunks and put into vector
-	if (isInBounds(chunk)) {
-		chunksInView.push_back(chunk);
-	}
-	if (isInBounds(glm::vec3(chunk[0], chunk[1] - 1, chunk[2]))) {
-		chunksInView.push_back(glm::vec3(chunk[0], chunk[1] - 1, chunk[2]));
-	}
-	if (isInBounds(glm::vec3(chunk[0] - 1, chunk[1], chunk[2]))) {
-		chunksInView.push_back(glm::vec3(chunk[0] - 1, chunk[1], chunk[2]));
-	}
-	if (isInBounds(glm::vec3(chunk[0], chunk[1], chunk[2] - 1))) {
-		chunksInView.push_back(glm::vec3(chunk[0], chunk[1], chunk[2] - 1));
-	}
-	if (isInBounds(glm::vec3(chunk[0], chunk[1] + 1, chunk[2]))) {
-		chunksInView.push_back(glm::vec3(chunk[0], chunk[1] + 1, chunk[2]));
-	}
-	if (isInBounds(glm::vec3(chunk[0] + 1, chunk[1], chunk[2]))) {
-		chunksInView.push_back(glm::vec3(chunk[0] + 1, chunk[1], chunk[2]));
-	}
-	if (isInBounds(glm::vec3(chunk[0], chunk[1], chunk[2] + 1))) {
-		chunksInView.push_back(glm::vec3(chunk[0], chunk[1], chunk[2] + 1));
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			for (int k = 0; k < 5; k++) {
+				if (isInBounds(glm::vec3(chunk[0] + i - 2, chunk[1] + j - 2, chunk[2] + k -2))) {
+					chunksInView.push_back(glm::vec3(chunk[0] + i - 2, chunk[1] + j - 2, chunk[2] + k - 2));
+				}
+			}
+		}
 	}
 
-	if (chunksInView == prevChunksInView) {
-		return chunkBuffersVert;
-	}
+	prevChunk = chunk;
 
-	prevChunksInView.resize(chunksInView.size());
-	for (int i = 0; i < chunksInView.size(); i++) {
-		prevChunksInView[i] = chunksInView[i];
-	}
-	
-	delete vertCountTotal;
-	chunkBuffersVert.clear();
-	chunkBuffersCol.clear();
+	changing = true;
+	different = true;
+
+
+
 
 	short**** chunkDat = seed->retrieveChunkData(chunksInView);
-
-	vertCountTotal = new int[chunksInView.size()];
 
 	int vertexCount = 0;
 
@@ -160,29 +147,20 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 				}
 			}
 		}
-		vertCountTotal[l] = vertexCount;
 		vertexCount = 0;
 	}
 	//------------------------------------------------------------------
-	
 
-	//buffers for all of the vertex and color data
-	std::vector<GLfloat> vertexBuff;
-	std::vector<GLfloat> colorBuff;
+	vertexBuff.clear();
+	colorBuff.clear();
+
+	vertexBuff.resize(chunksInView.size());
+	colorBuff.resize(chunksInView.size());
 
 
 	//iterate over every position in render distance
 	for (int l = 0; l < chunksInView.size(); l++) {
-		//init the two buffers
-		glGenBuffers(1, &masterVertexBufferID);
-		glBindBuffer(GL_ARRAY_BUFFER, masterVertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, vertCountTotal[l] * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &masterColorBufferID);
-		glBindBuffer(GL_ARRAY_BUFFER, masterColorBufferID);
-		glBufferData(GL_ARRAY_BUFFER, vertCountTotal[l] * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
-
-		//read all of chunk data and generate buffer accordingly
+		//read all of chunk data and generate data accordingly
 		for (int i = 0; i < 32; i++) {
 			for (int j = 0; j < 32; j++) {
 				for (int k = 0; k < 32; k++) {
@@ -224,7 +202,7 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 								cubeDat[0] = float(rand() % 40 / 40.0);
 								cubeDat[1] = float(rand() % 40 / 40.0);
 								cubeDat[2] = float(rand() % 40 / 40.0);
-								
+
 							}
 							else {
 								//other block types
@@ -257,40 +235,55 @@ std::vector<GLuint> BufferGen::updateBuffers() {
 
 
 							//fill the temp buffers with the data for the cube
-							for (int l = 0; l < vertexBufferData.size(); l++) {
-								vertexBuff.push_back(vertexBufferData[l]);
-								colorBuff.push_back(colorBufferData[l]);
+							for (int n = 0; n < vertexBufferData.size(); n++) {
+								vertexBuff[l].push_back(vertexBufferData[n]);
+								colorBuff[l].push_back(colorBufferData[n]);
 							}
-
-							//update the master buffer to contain the new data
-							glBindBuffer(GL_ARRAY_BUFFER, masterVertexBufferID);
-							glBufferSubData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), vertexBuff.size() * sizeof(GLfloat), vertexBuff.data());
-
-							glBindBuffer(GL_ARRAY_BUFFER, masterColorBufferID);
-							glBufferSubData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), colorBuff.size() * sizeof(GLfloat), colorBuff.data());
-							//the buffer offset needs to be kept track of to properly add to the OpenGL buffer object
-							bufferOffset += int(vertexBufferData.size());
-
-							vertexBuff.clear();
-							colorBuff.clear();
-
-							
 						}
 					}
 				}
 			}
 		}
-		chunkBuffersVert.push_back(masterVertexBufferID);
-		chunkBuffersCol.push_back(masterColorBufferID);
-		bufferOffset = 0;
 	}
-	
+
 	chunksInView.clear();
 
-	std::cout << "done" << std::endl;
-	std::cout << chunkBuffersVert.size() << std::endl << std::endl;
+	changing = false;
+	
+}
 
-	return chunkBuffersVert;
+void BufferGen::updateBuffers() {
+	//this returns if no new data to render
+	if (!different) {
+		return;
+	}
+	//this returns if there is new data but the thread is still writing it
+	//basically serving as a lock
+	else if (changing){
+		
+		return;
+	}
+	else {
+		chunkBuffersVert.clear();
+		chunkBuffersCol.clear();
+		vertCountTotal.clear();
+		for (int l = 0; l < vertexBuff.size(); l++) {
+			//init the two buffers
+			glGenBuffers(1, &masterVertexBufferID);
+			glBindBuffer(GL_ARRAY_BUFFER, masterVertexBufferID);
+			glBufferData(GL_ARRAY_BUFFER, vertexBuff[l].size() * sizeof(GLfloat), vertexBuff[l].data(), GL_STATIC_DRAW);
+
+			glGenBuffers(1, &masterColorBufferID);
+			glBindBuffer(GL_ARRAY_BUFFER, masterColorBufferID);
+			glBufferData(GL_ARRAY_BUFFER, vertexBuff[l].size() * sizeof(GLfloat), colorBuff[l].data(), GL_STATIC_DRAW);
+
+			chunkBuffersVert.push_back(masterVertexBufferID);
+			chunkBuffersCol.push_back(masterColorBufferID);
+
+			vertCountTotal.push_back(vertexBuff[l].size());
+		}
+		different = false;
+	}
 }
 
 std::vector<GLuint> BufferGen::getChunkBufferVert() {

@@ -1,9 +1,13 @@
-//renderer project, started 06/01/2024, lasted changed 7/14/2024
+//renderer project, started 06/01/2024, lasted changed 7/29/2024
 //started to help build understanding on renderering and hopefully create a game
 //early code is taken following the openGL tutorial found at www.opengl-tutorial.org
 
-//to do: increase render distance and relegate rendering to a seperate thread
-// also implement storing world data outside of program to reduce heap space taken by an increasing world
+//to do:
+//  * optimize chunk updating to make it faster
+//  * optimize chunk drawing to not include extranious vertexes
+//  * add textures
+//  * add physics
+//  * use file system to store world data to cut memory usage
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,16 +33,12 @@ GLFWwindow* window;
 #include "common/controls.hpp"
 #include "common/worldGen/bufferGen.hpp"
 
-void ThreadFunc(BufferGen& terrain) {
-    std::unique_lock<std::mutex> lock(threadLock);
-    terrain.updateBuffers();
-    lock.unlock();
-    
-    //while (gameRunning) {
-    //    //std::unique_lock<std::mutex> lock(threadLock);
-    //    terrain.updateBuffers();
-    //    //lock.unlock();
-    //}
+BufferGen terrain(320, 100);
+
+void ThreadFunc() {
+    while (gameRunning) {
+        terrain.threadDataUpdate();
+    }
 }
 
 int main(void)
@@ -93,14 +93,10 @@ int main(void)
     glDepthFunc(GL_LESS);
 
     //this class is the entire game. taking a world size as a paremter. this will change eventually
-    BufferGen terrain(320, 100);
-    //terrain.updateBuffers();
+    terrain.threadDataUpdate();
+    terrain.updateBuffers();
 
-    std::thread t(ThreadFunc, std::ref(terrain));
-
-    gameRunning = false;
-
-    t.join();
+    std::thread t(ThreadFunc);
 
     do {
 
@@ -130,8 +126,7 @@ int main(void)
         //send transformation to the currently bound shader
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-
-        std::unique_lock<std::mutex> lock(threadLock);
+        terrain.updateBuffers();
         
         for (int i = 0; i < terrain.getChunkBufferVert().size(); i++) {
             //first attribute buffer
@@ -165,7 +160,6 @@ int main(void)
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
         }
-        lock.unlock();
 
         //swap buffers
         glfwSwapBuffers(window);
@@ -174,6 +168,10 @@ int main(void)
 
     } //check if escape was pressed or if window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+
+    gameRunning = false;
+
+    t.join();
 
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);

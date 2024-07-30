@@ -1,5 +1,5 @@
 //bufferGen.hpp 
-//created 7/4/2024 last editied 7/14/2024
+//created 7/4/2024 last editied 7/29/2024
 //takes in data of what cubes to generate where adn tehn creates all of the required cube objects 
 //and then combines their data into one buffer for openGL to render all at once
 
@@ -25,9 +25,11 @@ class BufferGen {
 public:
 	BufferGen(int newWorldWidth, int newWorldHeight);
 
-	int* getVertexCount();
+	std::vector<int> getVertexCount();
 
-	std::vector<GLuint> updateBuffers();
+	void threadDataUpdate();
+
+	void updateBuffers();
 
 	std::vector<GLuint> getChunkBufferVert();
 	std::vector<GLuint> getChunkBufferCol();
@@ -35,11 +37,11 @@ private:
 	GLuint masterVertexBufferID;
 	GLuint masterColorBufferID;
 
-	int* vertCountTotal;
+	std::vector<int> vertCountTotal;
 
 	int bufferOffset = 0;
 
-	std::vector<glm::vec3> prevChunksInView;
+	glm::vec3 prevChunk;
 
 	std::vector<GLuint> chunkBuffersVert;
 	std::vector<GLuint> chunkBuffersCol;
@@ -48,6 +50,18 @@ private:
 
 	int worldWidth;
 	int worldHeight;
+
+	//list of all chunks withen the player range
+	std::vector<glm::vec3> chunksInView;
+
+	//buffers for all of the vertex and color data
+	std::vector<std::vector<GLfloat>> vertexBuff;
+	std::vector<std::vector<GLfloat>> colorBuff;
+
+
+
+	bool different;
+	bool changing;
 
 	bool isInBounds(glm::vec3 chunk);
 };
